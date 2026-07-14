@@ -25,7 +25,7 @@ from __future__ import annotations
 import os
 import random
 import sys
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Dict, List, Tuple
 
 import requests
@@ -578,8 +578,12 @@ def build_panel_dividers() -> str:
     return "\n".join(parts)
 
 
+# 固定 UTC+8 時區（台北時間），避免依賴系統 tz 資料庫
+TAIPEI_TZ = timezone(timedelta(hours=8))
+
+
 def build_header_footer(total_contributions: int) -> str:
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    now = datetime.now(TAIPEI_TZ).strftime("%Y-%m-%d %H:%M UTC+8")
     parts = []
     # 頂部標語
     parts.append(

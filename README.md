@@ -2,6 +2,12 @@
 
 <div align="center">
 
+[中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+
+</div>
+
+<div align="center">
+
 <img src="./profile-hud.svg" alt="Bug-Zapper & Chill hardware HUD dashboard" width="850" />
 
 **一個會即時反映我 GitHub 活動的賽博朋克黑金硬體控制台**

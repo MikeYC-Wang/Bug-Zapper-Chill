@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+[繁體中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 </div>
 
@@ -38,7 +38,7 @@ The whole image is regenerated and committed back to `main` automatically every 
 
 ```
 Bug-Zapper-Chill/
-├── generate_hud.py                 # Core: fetch data + hand-assemble SVG
+├── src/generate_hud.py             # Core: fetch data + hand-assemble SVG
 ├── profile-hud.svg                 # Auto-generated output (overwritten daily by the workflow)
 ├── .github/workflows/hud-updater.yml   # Daily scheduled automation workflow
 └── README.md
@@ -68,7 +68,7 @@ To embed this image in your own personal profile README (the `<username>/<userna
 pip install requests
 set GH_PAT=ghp_xxxxxxxxxxxxxxxxxxxx      # PowerShell: $env:GH_PAT="ghp_xxx"
 set HUD_USERNAME=MikeYC-Wang
-python generate_hud.py
+python src/generate_hud.py
 ```
 
 On success, `profile-hud.svg` will be generated in the project root.

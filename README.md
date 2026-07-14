@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+[繁體中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 </div>
 
@@ -38,7 +38,7 @@
 
 ```
 Bug-Zapper-Chill/
-├── generate_hud.py                 # 核心：抓資料 + 手工拼接 SVG
+├── src/generate_hud.py             # 核心：抓資料 + 手工拼接 SVG
 ├── profile-hud.svg                 # 自動產生的輸出（由 workflow 每日覆寫）
 ├── .github/workflows/hud-updater.yml   # 每日排程自動化工作流
 └── README.md
@@ -68,7 +68,7 @@ Bug-Zapper-Chill/
 pip install requests
 set GH_PAT=ghp_xxxxxxxxxxxxxxxxxxxx      # PowerShell: $env:GH_PAT="ghp_xxx"
 set HUD_USERNAME=MikeYC-Wang
-python generate_hud.py
+python src/generate_hud.py
 ```
 
 執行成功後會在專案根目錄產生 `profile-hud.svg`。

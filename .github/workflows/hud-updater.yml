@@ -42,7 +42,7 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
           HUD_USERNAME: MikeYC-Wang
-        run: python generate_hud.py
+        run: python src/generate_hud.py
 
       - name: Commit and push profile-hud.svg
         run: |

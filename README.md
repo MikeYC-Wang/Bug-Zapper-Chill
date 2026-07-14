@@ -52,7 +52,7 @@ Bug-Zapper-Chill/
 2. 到本倉庫 **Settings → Secrets and variables → Actions**，新增一個名為 `GH_PAT` 的 Repository secret，貼上剛剛的 Token。
 3. （選用）若要監控其他使用者，可在 workflow 中調整 `HUD_USERNAME` 環境變數，預設為 `MikeYC-Wang`。
 4. 手動觸發一次 **Actions → HUD Updater → Run workflow**，確認 `profile-hud.svg` 有被正確產生並提交。
-5. 之後每天 UTC 16:00（台灣時間 00:00）都會自動重新整理。
+5. 之後每 2 小時（UTC 0, 2, 4, ... 22，對應台灣時間 8, 10, 12, ... 6）都會自動重新整理，讓圖表能較即時反映當天的 Commit。
 
 若要在自己的個人 Profile README（`<username>/<username>` 倉庫）嵌入這張圖，可直接引用本倉庫產生的 raw SVG：
 

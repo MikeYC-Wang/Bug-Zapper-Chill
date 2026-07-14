@@ -248,6 +248,17 @@ def build_cooling_loop(panel: Tuple[float, float, float, float], today_count: in
         f'<rect x="{loop_x0:.1f}" y="{loop_y0:.1f}" width="{loop_w:.1f}" height="{loop_h:.1f}" '
         f'rx="18" fill="none" stroke="{COLOR_AMBER}" stroke-width="4" opacity="0.9"/>'
     )
+    # 流動的冷卻液高光：以移動的虛線段模擬管內液體持續循環流動，
+    # 流速依 PUMP SPEED 連動（轉速越高，流動越快）。
+    flow_dur = round(clamp(1.4 - (pump_rpm - 3500) / 500 * 0.5, 0.9, 1.4), 2)
+    parts.append(
+        f'<rect x="{loop_x0:.1f}" y="{loop_y0:.1f}" width="{loop_w:.1f}" height="{loop_h:.1f}" '
+        f'rx="18" fill="none" stroke="#fff6dd" stroke-width="2.6" stroke-linecap="round" '
+        f'stroke-dasharray="9 15" opacity="0.85">'
+        f'<animate attributeName="stroke-dashoffset" from="0" to="-24" '
+        f'dur="{flow_dur}s" repeatCount="indefinite"/>'
+        f'</rect>'
+    )
 
     # 儲液罐（覆蓋在迴路左側垂直邊上）
     tank_w, tank_h = 62, loop_h * 0.72

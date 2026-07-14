@@ -221,6 +221,9 @@ def build_cooling_loop(panel: Tuple[float, float, float, float], today_count: in
     """繪製左側過熱液態冷卻循環系統：儲液罐 + 矩形迴路水管 + CPU 水冷頭。"""
     x0, y0, x1, y1 = panel
     cx = x0 + (x1 - x0) / 2
+    # 以「今天日期 + 今日 Commit 數」作為種子：同一天內只要 Commit 數沒變，
+    # 重複執行就會產生完全相同的數值，避免高頻排程造成無意義的雜訊 commit。
+    random.seed(f"cooling-{date.today().isoformat()}-{today_count}")
     pump_rpm = random.randint(3500, 4000)
     coolant_temp, coolant_status = compute_coolant_status(today_count)
     sys_pressure, pressure_status = compute_sys_pressure(coolant_temp)
@@ -443,9 +446,11 @@ def build_tesla_tower(panel: Tuple[float, float, float, float], today_count: int
     x0, y0, x1, y1 = panel
     cx = x0 + (x1 - x0) / 2
 
+    # 同樣以「今天日期 + 今日 Commit 數」為種子，確保數值在同一天內保持穩定，
+    # 只有 Commit 數真的變動（或跨日）時才會改變，避免高頻排程洗版 commit 紀錄。
+    random.seed(f"tesla-{date.today().isoformat()}-{today_count}")
     bugs_destroyed = compute_bugs_destroyed(today_count)
     threat_level = compute_threat_level(bugs_destroyed)
-    random.seed(f"tesla-{today_count}")
 
     parts: List[str] = [build_panel_title(panel, "\u26a1", "EM BUG INTERCEPTOR", COLOR_NEON_GREEN)]
 

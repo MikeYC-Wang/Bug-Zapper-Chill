@@ -52,7 +52,7 @@ Bug-Zapper-Chill/
 2. In this repo, go to **Settings → Secrets and variables → Actions** and add a repository secret named `GH_PAT` with that token.
 3. (Optional) To track a different user, change the `HUD_USERNAME` environment variable in the workflow (default is `MikeYC-Wang`).
 4. Manually trigger **Actions → HUD Updater → Run workflow** once to confirm `profile-hud.svg` is generated and committed correctly.
-5. After that, it refreshes automatically every day at UTC 16:00 (00:00 Taipei time).
+5. After that, it refreshes automatically every 2 hours (UTC 0, 2, 4, ... 22), so the dashboard reflects today's commits more promptly.
 
 To embed this image in your own personal profile README (the `<username>/<username>` repo), reference the raw SVG produced by this repo directly:
 

@@ -52,7 +52,7 @@ Bug-Zapper-Chill/
 2. 本リポジトリの **Settings → Secrets and variables → Actions** で、`GH_PAT` という名前のリポジトリシークレットを新規作成し、先ほどのトークンを貼り付けます。
 3. （任意）別のユーザーを監視したい場合は、workflow 内の `HUD_USERNAME` 環境変数を変更してください（デフォルトは `MikeYC-Wang`）。
 4. **Actions → HUD Updater → Run workflow** を一度手動実行し、`profile-hud.svg` が正しく生成・コミットされることを確認してください。
-5. その後は毎日 UTC 16:00（台北時間 0:00）に自動的に更新されます。
+5. その後は 2 時間ごと（UTC 0, 2, 4, ... 22）に自動的に更新され、その日のコミットをより早く反映できます。
 
 自分の個人プロフィール README（`<username>/<username>` リポジトリ）にこの画像を埋め込むには、本リポジトリが生成する raw SVG を直接参照してください：
 

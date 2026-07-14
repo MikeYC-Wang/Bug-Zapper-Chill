@@ -1,12 +1,13 @@
 name: HUD Updater
 
-# Bug-Zapper & Chill — 每日自動重繪硬體 HUD 儀表板，並將產生的
+# Bug-Zapper & Chill — 每 2 小時自動重繪硬體 HUD 儀表板，並將產生的
 # profile-hud.svg 提交回 main 分支，讓 GitHub Profile README 顯示最新數據。
 
 on:
   schedule:
-    # UTC 16:00 == Asia/Taipei 00:00（每日台灣時間凌晨觸發）
-    - cron: "0 16 * * *"
+    # 每 2 小時觸發一次（UTC 0,2,4,...,22 == 台灣時間 8,10,12,...,6），
+    # 讓 HUD 能較即時反映當天新增的 Commit，而不用等到隔天才更新。
+    - cron: "0 */2 * * *"
   workflow_dispatch: {} # 允許手動於 Actions 頁面觸發，方便除錯與立即更新
 
 # 僅授予推回程式碼所需的最小權限

@@ -52,7 +52,7 @@ Bug-Zapper-Chill/
 2. 이 저장소의 **Settings → Secrets and variables → Actions**에서 `GH_PAT`라는 이름의 Repository secret을 새로 만들고 방금 발급받은 토큰을 붙여넣습니다.
 3. (선택 사항) 다른 사용자를 모니터링하려면 workflow의 `HUD_USERNAME` 환경 변수를 변경하세요 (기본값은 `MikeYC-Wang`).
 4. **Actions → HUD Updater → Run workflow**를 한 번 수동으로 실행하여 `profile-hud.svg`가 올바르게 생성되고 커밋되는지 확인합니다.
-5. 이후에는 매일 UTC 16:00 (타이베이 시간 00:00)에 자동으로 갱신됩니다.
+5. 이후에는 2시간마다(UTC 0, 2, 4, ... 22) 자동으로 갱신되어, 오늘의 커밋을 더 빠르게 반영합니다.
 
 자신의 개인 프로필 README (`<username>/<username>` 저장소)에 이 이미지를 삽입하려면 이 저장소가 생성하는 raw SVG를 직접 참조하면 됩니다:
 

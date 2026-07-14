@@ -299,29 +299,60 @@ def build_cooling_loop(panel: Tuple[float, float, float, float], today_count: in
             f'</circle>'
         )
 
-    # CPU 水冷頭（覆蓋在迴路右側垂直邊上）
+    # CPU 水冷頭（覆蓋在迴路右側垂直邊上），維持固定的震光綠色，不與 COOLANT TEMP 顏色連動
     cpu_cx, cpu_cy = loop_x1, loop_y0 + loop_h / 2
+    cpu_color = COLOR_NEON_GREEN
+    # 風扇轉速依 PUMP SPEED 連動：轉速越高，動畫週期越短（轉得越快）
+    fan_dur = round(clamp(1.6 - (pump_rpm - 3500) / 500 * 0.6, 1.0, 1.6), 2)
+
+    # B：外圍呼吸光暈（opacity 週期性脈動，模擬散熱運作中的「心跳」）
+    parts.append(
+        f'<rect x="{cpu_cx - 30:.1f}" y="{cpu_cy - 30:.1f}" width="60" height="60" rx="9" '
+        f'fill="none" stroke="{cpu_color}" stroke-width="1.4" opacity="0.4" filter="url(#glow)">'
+        f'<animate attributeName="opacity" values="0.2;0.75;0.2" dur="2.4s" repeatCount="indefinite"/>'
+        f'</rect>'
+    )
     parts.append(
         f'<rect x="{cpu_cx - 26:.1f}" y="{cpu_cy - 26:.1f}" width="52" height="52" rx="6" '
-        f'fill="#0b0d12" stroke="{COLOR_NEON_GREEN}" stroke-width="2" filter="url(#glow)"/>'
+        f'fill="#0b0d12" stroke="{cpu_color}" stroke-width="2" filter="url(#glow)"/>'
     )
     for fin in range(5):
         fy = cpu_cy - 18 + fin * 9
         parts.append(
             f'<line x1="{cpu_cx - 19:.1f}" y1="{fy:.1f}" x2="{cpu_cx + 19:.1f}" y2="{fy:.1f}" '
-            f'stroke="{COLOR_NEON_GREEN}" stroke-width="1.1" opacity="0.65"/>'
+            f'stroke="{cpu_color}" stroke-width="1.1" opacity="0.5"/>'
+        )
+    # A：中央旋轉風扇葉輪（三片弧形桓葉形狀扇葉 + 中心軸心），整組以 animateTransform 連續旋轉
+    blade_len, blade_w = 13, 7
+    blade_path = (
+        f'M {cpu_cx:.1f},{cpu_cy:.1f} '
+        f'C {cpu_cx - blade_w:.1f},{cpu_cy - blade_len * 0.4:.1f} '
+        f'{cpu_cx - blade_w * 0.3:.1f},{cpu_cy - blade_len * 0.9:.1f} '
+        f'{cpu_cx:.1f},{cpu_cy - blade_len:.1f} '
+        f'C {cpu_cx + blade_w * 0.55:.1f},{cpu_cy - blade_len * 0.85:.1f} '
+        f'{cpu_cx + blade_w * 0.6:.1f},{cpu_cy - blade_len * 0.25:.1f} '
+        f'{cpu_cx:.1f},{cpu_cy:.1f} Z'
+    )
+    parts.append('<g>')
+    parts.append(
+        f'<animateTransform attributeName="transform" type="rotate" '
+        f'from="0 {cpu_cx:.1f} {cpu_cy:.1f}" to="360 {cpu_cx:.1f} {cpu_cy:.1f}" '
+        f'dur="{fan_dur}s" repeatCount="indefinite"/>'
+    )
+    for blade in range(3):
+        angle = blade * 120
+        parts.append(
+            f'<path d="{blade_path}" transform="rotate({angle} {cpu_cx:.1f} {cpu_cy:.1f})" '
+            f'fill="{cpu_color}" opacity="0.85"/>'
         )
     parts.append(
-        f'<line x1="{cpu_cx - 13:.1f}" y1="{cpu_cy:.1f}" x2="{cpu_cx + 13:.1f}" y2="{cpu_cy:.1f}" '
-        f'stroke="{COLOR_NEON_GREEN}" stroke-width="2"/>'
+        f'<circle cx="{cpu_cx:.1f}" cy="{cpu_cy:.1f}" r="3.4" fill="#0b0d12" '
+        f'stroke="{cpu_color}" stroke-width="1.4"/>'
     )
-    parts.append(
-        f'<line x1="{cpu_cx:.1f}" y1="{cpu_cy - 13:.1f}" x2="{cpu_cx:.1f}" y2="{cpu_cy + 13:.1f}" '
-        f'stroke="{COLOR_NEON_GREEN}" stroke-width="2"/>'
-    )
+    parts.append('</g>')
     parts.append(
         f'<text x="{cpu_cx:.1f}" y="{cpu_cy - 34:.1f}" text-anchor="middle" '
-        f'font-family="{FONT_STACK}" font-size="7.5" fill="{COLOR_NEON_GREEN}">CPU BLOCK</text>'
+        f'font-family="{FONT_STACK}" font-size="7.5" fill="{cpu_color}">CPU BLOCK</text>'
     )
 
     # 數據面板：兩欄式（左標籤 / 右數值），依序列出三項狀態
@@ -354,27 +385,32 @@ def build_cooling_loop(panel: Tuple[float, float, float, float], today_count: in
 # ---------------------------------------------------------------------------
 
 def build_bug_icon(cx: float, cy: float) -> str:
-    """繪製一個掙扎中的黃色 Bug 向量圖標（橢圓身軀 + 亂舞的六隻腳 + 觸角）。"""
-    return f"""<g transform="translate({cx:.1f},{cy:.1f}) rotate(-12)">
-      <ellipse cx="0" cy="0" rx="13" ry="8.5" fill="#ffe066" stroke="#6b4e00" stroke-width="1.3"/>
-      <line x1="-9" y1="0" x2="9" y2="0" stroke="#6b4e00" stroke-width="0.8"/>
-      <line x1="-8" y1="-7" x2="-17" y2="-15" stroke="#6b4e00" stroke-width="1.6"/>
-      <line x1="-2" y1="-8" x2="-5" y2="-19" stroke="#6b4e00" stroke-width="1.6"/>
-      <line x1="7" y1="-7" x2="15" y2="-17" stroke="#6b4e00" stroke-width="1.6"/>
-      <line x1="-8" y1="7" x2="-18" y2="12" stroke="#6b4e00" stroke-width="1.6"/>
-      <line x1="1" y1="8" x2="2" y2="20" stroke="#6b4e00" stroke-width="1.6"/>
-      <line x1="8" y1="7" x2="17" y2="14" stroke="#6b4e00" stroke-width="1.6"/>
-      <circle cx="-6" cy="-14" r="1.3" fill="#6b4e00"/>
-      <circle cx="3" cy="-15" r="1.3" fill="#6b4e00"/>
-      <circle cx="-9" cy="-2.5" r="1.6" fill="#3a2900"/>
-      <circle cx="-9" cy="2.5" r="1.6" fill="#3a2900"/>
+    """繪製一個掙扎中的黃色 Bug 向量圖標（橢圓身軀 + 亂舞的六隻腳 + 觸角）。
+    F：內層 <g> 以 animateTransform 來回擺動旋轉角度，模擬觸電掙扎抖動。
+    """
+    return f"""<g transform="translate({cx:.1f},{cy:.1f})">
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          values="-12;-26;2;-20;-8;-12" dur="0.45s" repeatCount="indefinite"/>
+        <ellipse cx="0" cy="0" rx="13" ry="8.5" fill="#ffe066" stroke="#6b4e00" stroke-width="1.3"/>
+        <line x1="-9" y1="0" x2="9" y2="0" stroke="#6b4e00" stroke-width="0.8"/>
+        <line x1="-8" y1="-7" x2="-17" y2="-15" stroke="#6b4e00" stroke-width="1.6"/>
+        <line x1="-2" y1="-8" x2="-5" y2="-19" stroke="#6b4e00" stroke-width="1.6"/>
+        <line x1="7" y1="-7" x2="15" y2="-17" stroke="#6b4e00" stroke-width="1.6"/>
+        <line x1="-8" y1="7" x2="-18" y2="12" stroke="#6b4e00" stroke-width="1.6"/>
+        <line x1="1" y1="8" x2="2" y2="20" stroke="#6b4e00" stroke-width="1.6"/>
+        <line x1="8" y1="7" x2="17" y2="14" stroke="#6b4e00" stroke-width="1.6"/>
+        <circle cx="-6" cy="-14" r="1.3" fill="#6b4e00"/>
+        <circle cx="3" cy="-15" r="1.3" fill="#6b4e00"/>
+        <circle cx="-9" cy="-2.5" r="1.6" fill="#3a2900"/>
+        <circle cx="-9" cy="2.5" r="1.6" fill="#3a2900"/>
+      </g>
     </g>"""
 
 
-def build_lightning(x1: float, y1: float, x2: float, y2: float,
-                     segments: int = 6, jitter: float = 10.0,
-                     color: str = COLOR_NEON_GREEN, seed: str = "bolt") -> str:
-    """以多節點折線模擬尖銳閃電束，並套用強發光濾鏡。"""
+def _lightning_path(x1: float, y1: float, x2: float, y2: float,
+                     segments: int, jitter: float, seed: str) -> str:
+    """以指定 seed 產生一條折線閃電路徑字串（供多組路徑做 flicker 動畫用）。"""
     rng = random.Random(seed)
     points = []
     for i in range(segments + 1):
@@ -385,12 +421,28 @@ def build_lightning(x1: float, y1: float, x2: float, y2: float,
             x += rng.uniform(-jitter, jitter)
             y += rng.uniform(-jitter * 0.5, jitter * 0.5)
         points.append((x, y))
-    d = "M " + " L ".join(f"{px:.1f},{py:.1f}" for px, py in points)
+    return "M " + " L ".join(f"{px:.1f},{py:.1f}" for px, py in points)
+
+
+def build_lightning(x1: float, y1: float, x2: float, y2: float,
+                     segments: int = 6, jitter: float = 10.0,
+                     color: str = COLOR_NEON_GREEN, seed: str = "bolt") -> str:
+    """以多節點折線模擬尖銳閃電束，並套用強發光濾鏡。
+    D：在 3 條端點相同、抖動幅度不同的路徑之間快速切換 + opacity 閃爍，
+    模擬電弧持續放電、忽明忽暗的效果。
+    """
+    d0 = _lightning_path(x1, y1, x2, y2, segments, jitter, seed)
+    d1 = _lightning_path(x1, y1, x2, y2, segments, jitter, f"{seed}-f1")
+    d2 = _lightning_path(x1, y1, x2, y2, segments, jitter, f"{seed}-f2")
+    d_anim = f'<animate attributeName="d" values="{d0};{d1};{d2};{d0}" dur="0.2s" repeatCount="indefinite"/>'
+    op_anim = ('<animate attributeName="opacity" values="1;0.5;1;0.75;1" '
+               'dur="0.15s" repeatCount="indefinite"/>')
     return (
-        f'<path d="{d}" fill="none" stroke="{color}" stroke-width="2.2" '
-        f'stroke-linecap="round" stroke-linejoin="round" filter="url(#glowStrong)"/>'
-        f'<path d="{d}" fill="none" stroke="#ffffff" stroke-width="0.8" '
-        f'stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>'
+        f'<path d="{d0}" fill="none" stroke="{color}" stroke-width="2.2" '
+        f'stroke-linecap="round" stroke-linejoin="round" filter="url(#glowStrong)">'
+        f'{d_anim}{op_anim}</path>'
+        f'<path d="{d0}" fill="none" stroke="#ffffff" stroke-width="0.8" '
+        f'stroke-linecap="round" stroke-linejoin="round" opacity="0.85">{d_anim}</path>'
     )
 
 
@@ -462,14 +514,22 @@ def build_tesla_tower(panel: Tuple[float, float, float, float], today_count: int
     parts.append(cone_svg)
 
     orb_cy = apex_y - 16
-    # 發光電磁球
-    parts.append(f'<circle cx="{cx:.1f}" cy="{orb_cy:.1f}" r="19" fill="url(#orbGlow)"/>')
+    # E：發光電磁球（外光暈半徑、中圈半徑、核心亮度都持續脈動，模擬蓄能中）
     parts.append(
-        f'<circle cx="{cx:.1f}" cy="{orb_cy:.1f}" r="10" fill="none" stroke="{COLOR_NEON_GREEN}" '
-        f'stroke-width="1.2" opacity="0.8"/>'
+        f'<circle cx="{cx:.1f}" cy="{orb_cy:.1f}" r="19" fill="url(#orbGlow)">'
+        f'<animate attributeName="r" values="17;22;17" dur="1.8s" repeatCount="indefinite"/>'
+        f'</circle>'
     )
     parts.append(
-        f'<circle cx="{cx:.1f}" cy="{orb_cy:.1f}" r="6.5" fill="#eafffa" filter="url(#glowStrong)"/>'
+        f'<circle cx="{cx:.1f}" cy="{orb_cy:.1f}" r="10" fill="none" stroke="{COLOR_NEON_GREEN}" '
+        f'stroke-width="1.2" opacity="0.8">'
+        f'<animate attributeName="r" values="9;12;9" dur="1.8s" repeatCount="indefinite"/>'
+        f'</circle>'
+    )
+    parts.append(
+        f'<circle cx="{cx:.1f}" cy="{orb_cy:.1f}" r="6.5" fill="#eafffa" filter="url(#glowStrong)">'
+        f'<animate attributeName="opacity" values="1;0.65;1" dur="1.2s" repeatCount="indefinite"/>'
+        f'</circle>'
     )
 
     # 左右閃電束擊中點：與電磁球同高，直接橫向命中兩側標靶
@@ -588,12 +648,13 @@ def build_header_footer(total_contributions: int) -> str:
     taipei_tz = timezone(timedelta(hours=8))
     now = datetime.now(taipei_tz).strftime("%Y-%m-%d %H:%M (UTC+8)")
     parts = []
-    # 頂部標語
+    # 頂部標語：置中顯示，並用中性白色避免與其他琴珀金文字争霸
     parts.append(
-        f'<text x="24" y="20" font-family="{FONT_STACK}" font-size="13" font-weight="bold" '
-        f'fill="{COLOR_AMBER}" letter-spacing="1">PROJECT: Bug-Zapper &amp; Chill v1.0</text>'
+        f'<text x="{WIDTH / 2:.1f}" y="20" text-anchor="middle" font-family="{FONT_STACK}" '
+        f'font-size="13" font-weight="bold" fill="#e8e8ec" letter-spacing="1">'
+        f'PROJECT: Bug-Zapper &amp; Chill v1.0</text>'
     )
-    parts.append(f'<circle cx="{WIDTH - 150}" cy="16" r="4" fill="{COLOR_NEON_GREEN}" filter="url(#glow)">'
+    parts.append(f'<circle cx="{WIDTH - 195}" cy="16" r="4" fill="{COLOR_NEON_GREEN}" filter="url(#glow)">'
                   f'<animate attributeName="opacity" values="1;0.25;1" dur="1.8s" repeatCount="indefinite"/>'
                   f'</circle>')
     parts.append(

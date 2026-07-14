@@ -38,7 +38,7 @@
 
 ```
 Bug-Zapper-Chill/
-├── generate_hud.py                 # コア：データ取得 + SVG 手動組み立て
+├── src/generate_hud.py             # コア：データ取得 + SVG 手動組み立て
 ├── profile-hud.svg                 # 自動生成される出力（workflow が毎日上書き）
 ├── .github/workflows/hud-updater.yml   # 毎日のスケジュール自動化ワークフロー
 └── README.md
@@ -68,7 +68,7 @@ Bug-Zapper-Chill/
 pip install requests
 set GH_PAT=ghp_xxxxxxxxxxxxxxxxxxxx      # PowerShell: $env:GH_PAT="ghp_xxx"
 set HUD_USERNAME=MikeYC-Wang
-python generate_hud.py
+python src/generate_hud.py
 ```
 
 成功すると、プロジェクトのルートディレクトリに `profile-hud.svg` が生成されます。

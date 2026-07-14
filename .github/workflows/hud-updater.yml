@@ -1,0 +1,58 @@
+name: HUD Updater
+
+# Bug-Zapper & Chill — 每日自動重繪硬體 HUD 儀表板，並將產生的
+# profile-hud.svg 提交回 main 分支，讓 GitHub Profile README 顯示最新數據。
+
+on:
+  schedule:
+    # UTC 16:00 == Asia/Taipei 00:00（每日台灣時間凌晨觸發）
+    - cron: "0 16 * * *"
+  workflow_dispatch: {} # 允許手動於 Actions 頁面觸發，方便除錯與立即更新
+
+# 僅授予推回程式碼所需的最小權限
+permissions:
+  contents: write
+
+# 避免排程與手動觸發重疊執行導致 race condition 造成的推送衝突
+concurrency:
+  group: hud-updater
+  cancel-in-progress: true
+
+jobs:
+  update-hud:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # 使用 PAT 簽出，讓後續 push 具備寫入權限（GITHUB_TOKEN 預設無法觸發後續 workflow，
+          # 且此專案的資料撈取與推送共用同一組 PAT）
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install --no-cache-dir requests
+
+      - name: Generate HUD SVG
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          HUD_USERNAME: MikeYC-Wang
+        run: python generate_hud.py
+
+      - name: Commit and push profile-hud.svg
+        run: |
+          git config user.name "MikeYC-Wang"
+          git config user.email "asd384639@gmail.com"
+          git add profile-hud.svg
+          # 若內容沒有變化則跳過 commit，避免產生空提交
+          if git diff --staged --quiet; then
+            echo "No changes to profile-hud.svg — skipping commit."
+          else
+            git commit -m "chore: update hardware HUD dashboard [skip ci]"
+            git push origin HEAD:main
+          fi

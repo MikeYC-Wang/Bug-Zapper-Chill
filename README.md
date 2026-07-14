@@ -15,15 +15,14 @@
 
 `Bug-Zapper & Chill` 是一個完全原創的 GitHub Profile 動態數據面板專案。它會每天自動：
 
-1. 透過 GitHub GraphQL API v4 撈取過去 365 天的 Contribution Calendar 矩陣。
+1. 透過 GitHub GraphQL API v4 撈取過去 365 天的 Contribution Calendar 統計。
 2. 用純 Python 字串格式化（**沒有** matplotlib / Pillow 等繪圖庫）手工拼接原生 SVG。
-3. 產生一張 `profile-hud.svg`，畫出三大硬體核心組件：
+3. 產生一張 `profile-hud.svg`，畫出左右兩大硬體核心組件：
 
 | 組件 | 說明 |
 |---|---|
-| 🧊 **中央 3D 晶片矩陣** | 把 52 週 × 7 天的 Commit 紀錄以等角投影 (isometric projection) 繪製成立體晶片方塊陣列，Commit 越多、晶片越高、顏色越接近發光琥珀金。 |
-| 🧪 **過熱液態冷卻循環系統** | 模擬一顆連接 CPU 水冷頭的儲液冷卻循環，液面高度與溫度會隨著今日 Commit 數量動態變化（`24°C [STANDBY]` ~ `84°C [OVERCLOCK]`）。 |
-| ⚡ **Bug 誘捕電磁防禦塔** | 一座會發射閃電的特斯拉線圈塔，每天用你的 Commit 數量計算出「今日消滅的 Bug 數量」，順便電爆一隻 `NullPointerException`。 |
+| 🧪 **過熱液態冷卻循環系統** | 一顆連接 CPU 水冷頭的矩形迴路儲液罐，冷卻液液面、氣泡動畫、PUMP SPEED / COOLANT TEMP / SYS PRESSURE 都會隨著今日 Commit 數量動態變化（`24°C [STANDBY]` ~ `84°C [OVERCLOCK]`）。 |
+| ⚡ **Bug 誘捕電磁防禦塔** | 一座會發射閃電的錐形防禦塔，每天用你的 Commit 數量計算出「今日消滅的 Bug 數量」，順便電爆一隻掙扎中的黃色 Bug 和 `NullPointer` 例外。 |
 
 整個畫面每天由 [GitHub Actions](.github/workflows/hud-updater.yml) 自動重新產生並提交回 `main`，不需要手動維護。
 
@@ -72,11 +71,8 @@ python generate_hud.py
 
 ## 技術重點
 
-- **零繪圖依賴**：所有視覺元素（等角投影方塊、發光濾鏡、漸層、閃電折線）都是原生 `<svg>` 標籤字串拼接，沒有任何點陣圖或第三方繪圈函式庫。
-- **等角投影公式**：
-  $$x_{iso} = (x - y)\cos(30°) + offset_x$$
-  $$y_{iso} = (x + y)\sin(30°) - z + offset_y$$
-  每個晶片方塊由頂面 / 左側面 / 右側面三個 `<polygon>` 以不同明暗係數組成立體光影。
+- **零繪圖依賴**：所有視覺元素（迴路管線、發光濾鏡、漸層、閃電折線）都是原生 `<svg>` 標籤字串拼接，沒有任何點陣圖或第三方繪圖函式庫。
+- **動態聯動數據**：冷卻系統與防禦塔的數值都是依「今日 Commit 數」即時計算，而非寫死的靜態展示。
 - **失敗即失敗，不造假**：資料撈取失敗時腳本會直接以非零狀態碼結束，不會用假資料生成誤導性的 HUD。
 
 ---

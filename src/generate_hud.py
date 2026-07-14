@@ -578,12 +578,10 @@ def build_panel_dividers() -> str:
     return "\n".join(parts)
 
 
-# 固定 UTC+8 時區（台北時間），避免依賴系統 tz 資料庫
-TAIPEI_TZ = timezone(timedelta(hours=8))
-
-
 def build_header_footer(total_contributions: int) -> str:
-    now = datetime.now(TAIPEI_TZ).strftime("%Y-%m-%d %H:%M UTC+8")
+    # 顯示台灣時區 (UTC+8)，而非 GitHub Actions 執行環境預設的 UTC
+    taipei_tz = timezone(timedelta(hours=8))
+    now = datetime.now(taipei_tz).strftime("%Y-%m-%d %H:%M (UTC+8)")
     parts = []
     # 頂部標語
     parts.append(

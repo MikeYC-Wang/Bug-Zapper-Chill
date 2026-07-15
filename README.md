@@ -83,6 +83,12 @@ python src/generate_hud.py
 
 ---
 
+## License
+
+本專案以 [MIT License](LICENSE) 發佈，可自由使用、修改、重新發佈，但須保留原著作權聲明。
+
+---
+
 <div align="center">
 
 **ENGINEER: MikeYC-Wang** · SYSTEM STATUS: ONLINE

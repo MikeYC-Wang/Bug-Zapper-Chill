@@ -83,6 +83,12 @@ On success, `profile-hud.svg` will be generated in the project root.
 
 ---
 
+## License
+
+This project is released under the [MIT License](LICENSE) — free to use, modify, and redistribute, provided the original copyright notice is retained.
+
+---
+
 <div align="center">
 
 **ENGINEER: MikeYC-Wang** · SYSTEM STATUS: ONLINE
